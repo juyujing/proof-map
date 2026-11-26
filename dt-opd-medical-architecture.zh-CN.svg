@@ -173,7 +173,7 @@
   <rect x="1218" y="201" width="112" height="21" rx="10.5" fill="#9f1d35"/><text x="1274" y="216" class="chip" fill="#ffffff" text-anchor="middle">本图主线・实作</text>
   <text x="1218" y="245" class="tx">边界：违反 AMA 九条医学伦理原则的请求</text>
   <text x="1218" y="267" class="tx">边界教师：模型化（MSB 安全微调）</text>
-  <text x="1218" y="289" class="tx">指针：有害度＋四项医学能力</text>
+  <text x="1218" y="289" class="tx">指标：有害度＋四项医学能力</text>
   <text x="1218" y="306" class="sm">A 线 b1／dt 已完成；B 线 b1 训练中、dt 调度</text>
   <text x="1218" y="324" class="sm">误拒（相近正当请求）评估尚未纳入</text>
 

@@ -93,20 +93,20 @@ figure{margin:0}figure img{display:block;width:100%;height:auto;border-radius:10
 <header>
 <span class="eyebrow">Dual-Teacher OPD · <time datetime="2026-11-26">2026-11-26</time></span>
 <h1>DT-OPD 证明地图 · 医学</h1>
-<p class="thesis">医学实验比较能力教师能教会学生多少医学知识，以及边界教师能否额外降低有害回应、避免误拒正当请求。密钥授权与合成病历隐私另用各自的数据与指针。</p>
+<p class="thesis">医学实验比较能力教师能教会学生多少医学知识，以及边界教师能否额外降低有害回应、避免误拒正当请求。密钥授权与合成病历隐私另用各自的数据与指标。</p>
 <nav aria-label="页面导览" class="legend"><a href="#pipeline">模型架构</a><a href="#medicine">医学结果与基线</a><a href="#boundaries">授权与病历隐私</a><a href="#timeline">年底时程</a><a href="#appendix">其他领域</a><a href="./" lang="zh-TW" hreflang="zh-TW">繁體中文</a></nav>
 </header>
 <main>
 <section id="pipeline">
 <h2>医疗伦理 DT-OPD 架构</h2>
-<figure><a href="dt-opd-medical-architecture.zh-CN.svg"><img src="dt-opd-medical-architecture.zh-CN.svg" width="1600" height="1010" alt="DT-OPD 医学架构图，显示学生生成、双教师、审查与修复、损失更新，以及学生独立推论"></a><figcaption class="note">Claude 绘制。点图可放大。三类医学边界各用自己的数据与评估指针。</figcaption></figure>
+<figure><a href="dt-opd-medical-architecture.zh-CN.svg"><img src="dt-opd-medical-architecture.zh-CN.svg" width="1600" height="1010" alt="DT-OPD 医学架构图，显示学生生成、双教师、审查与修复、损失更新，以及学生独立推论"></a><figcaption class="note">Claude 绘制。点图可放大。三类医学边界各用自己的数据与评估指标。</figcaption></figure>
 <p>学生先生成回答。冻结的能力教师提供逐词元分布，冻结的边界教师回答同一请求。当边界教师拒答而学生作答，审查器将该样本送往修复路径。合规样本使用正向与反向 KL 各半的能力损失。激活修复目标时，越界样本跳过能力损失，改用边界教师的两种上下文评分差与修正版的负对数似然。PID 依有害请求中的越界比例调整边界权重（预算 5%，权重下限 1.0）。训练只更新学生，推论由学生独立完成。</p>
 <h3>学生、教师与脱机知识蒸馏（KD）</h3>
 <div class="scroll" tabindex="0"><table><thead><tr><th>实验</th><th>学生</th><th>能力教师</th><th>边界教师</th><th>脱机 KD</th><th>进度</th></tr></thead><tbody>
 <tr><th>A 线 b1／DT</th><td>MedAlpaca-7B</td><td>Llama-2-70B-chat</td><td>b1 无；DT 为 MedAlpaca-7B＋MSB 安全微调</td><td>无</td><td>已实测</td></tr>
 <tr><th>A 线基座对照</th><td>MedAlpaca-7B</td><td>Llama-2-70B 基座</td><td>b1 无；DT 沿用 A 线边界教师</td><td>无</td><td>已调度</td></tr>
 <tr><th>B 线 b1／DT</th><td>Qwen3.5-9B-Base</td><td>Qwen3.8-27B</td><td>b1 无；DT 为 Qwen3.5-9B-Base＋MSB 安全微调</td><td>无</td><td>11/26 纪录中 b1 已到 50／112 步，DT 已调度</td></tr>
-<tr><th>B 线基座对照</th><td>Qwen3.5-9B-Base</td><td>Qwen3.5-35B-A3B-Base</td><td>b1 无；DT 沿用 B 线边界教师</td><td>无</td><td>已调度；先量测教师</td></tr>
+<tr><th>B 线基座对照</th><td>Qwen3.5-9B-Base</td><td>Qwen3.5-35B-A3B-Base</td><td>b1 无；DT 沿用 B 线边界教师</td><td>无</td><td>已调度；先测量教师</td></tr>
 <tr><th>密钥授权 DT</th><td>Llama-3-8B-Instruct</td><td>Llama-3-8B-Instruct＋医学 SFT</td><td>dt-repair 采密钥规则（配 Llama-3-8B-Instruct）；dt-learned 采复现的 SudoLM 权重</td><td>无</td><td>300 步已完成</td></tr>
 <tr><th>病历隐私 DT</th><td>Qwen3.5-2B</td><td>Qwen3.5-9B＋MultiMedQA 与合成病历 SFT</td><td>以其他患者病历调校的识别信息审查者，搭配未接触目标病历的 Qwen3.5-9B 评分者</td><td>无（规划）</td><td>数据已备</td></tr>
 </tbody></table></div>
@@ -114,7 +114,7 @@ figure{margin:0}figure img{display:block;width:100%;height:auto;border-radius:10
 </section>
 <section id="medicine">
 <h2>医疗伦理 · 医学能力与有害回应</h2>
-<p>MedSafetyBench（MSB）含 900 条训练样本与 900 条有害测试请求。测试题由 GPT-4 与 Llama-2 各出 450 条。本案以 Qwen3.8-27B 评审回答有害度（1–5，越低越好），并量测四项医学能力（准确率 %）。<br><a href="https://arxiv.org/abs/2403.03744">MedSafetyBench 原文</a></p>
+<p>MedSafetyBench（MSB）含 900 条训练样本与 900 条有害测试请求。测试题由 GPT-4 与 Llama-2 各出 450 条。本案以 Qwen3.8-27B 评审回答有害度（1–5，越低越好），并测量四项医学能力（准确率 %）。<br><a href="https://arxiv.org/abs/2403.03744">MedSafetyBench 原文</a></p>
 <h3>B 线 · 统一学生与方法对照</h3>
 <div class="scroll" tabindex="0"><table><thead><tr><th>模型</th><th>MSB GPT-4 ↓</th><th>MSB Llama-2 ↓</th><th>MedQA</th><th>MedMCQA</th><th>PubMedQA</th><th>MMLU-Med</th></tr></thead><tbody>
 <tr><th>Qwen3.5-9B-Base</th><td>1.39</td><td>1.11</td><td>73.6</td><td>66.1</td><td>78.0</td><td>85.3</td></tr>
@@ -122,7 +122,7 @@ figure{margin:0}figure img{display:block;width:100%;height:auto;border-radius:10
 <tr><th>Qwen3.8-27B 能力教师</th><td>1.02</td><td>1.01</td><td>83.4</td><td>69.2</td><td>73.0</td><td>88.5</td></tr>
 <tr><th>SafeMed-R1 作者权重（Qwen3-32B＋SFT＋GRPO）</th><td>1.16</td><td>1.14</td><td>75.4</td><td>68.7</td><td>73.8</td><td>87.1</td></tr>
 </tbody></table></div>
-<p>MSB 安全微调已达有害度下限，医学能力较原学生降低 0–0.4 个百分点，仍须量测相近正当请求的误拒。Qwen3.8-27B 也接近下限，因此增列未经安全对齐的 Qwen3.5-35B-A3B-Base，比较固定教师下 b1 与 DT 的增量效果，并记录审查器触发率。</p>
+<p>MSB 安全微调已达有害度下限，医学能力较原学生降低 0–0.4 个百分点，仍须测量相近正当请求的误拒。Qwen3.8-27B 也接近下限，因此增列未经安全对齐的 Qwen3.5-35B-A3B-Base，比较固定教师下 b1 与 DT 的增量效果，并记录审查器触发率。</p>
 <p>SafeMed-R1 作者权重的有害度为初测值。30 则回答因评审生成上限而漏计，且漏计样本较倾向服从有害请求，初测分数偏低。评审已加入以较长上限补评的流程，修订分数待出。原文三评审平均为 Qwen3-32B 基座 1.33、SafeMed-R1 1.10，采另一评估口径。公开权重已重测；以 Qwen3.5-9B-Base 复现 SFT＋GRPO 方法已通过本机端到端与续跑测试，已调度。以 Qwen3.8-27B 产生训练数据，分别评估 SFT 与 SFT＋GRPO；正式结果待验。统一比较共五臂：原学生、MSB 安全微调、SafeMed-R1 式 SFT＋GRPO、b1、DT。<br><a href="https://arxiv.org/abs/2605.28338">SafeMed-R1 原文</a> · <a href="https://huggingface.co/OpenMedZoo/SafeMed-R1">作者权重</a></p>
 <p class="note">B 线、Qwen3.8-27B 与作者权重的数值来自 2026-11-26 Experiment 运行输出，待导出逐题结果后再验收。</p>
 <h3>A 线 · MedSafetyBench 文献复现</h3>
@@ -139,17 +139,17 @@ figure{margin:0}figure img{display:block;width:100%;height:auto;border-radius:10
 <h2>医学延伸 · 密钥授权与病历隐私</h2>
 <div class="cols">
 <article class="box"><h3>SudoLM · 密钥授权</h3><p>复现组、dt-repair、dt-learned 的访问控制 F1 依序为 0.8334、0.7872、0.8375；医学正确率依序为 25.84%、13.97%、10.08%。dt-learned 拒答 99.73% 的无密钥公开题。复现组对这批公开题全数拒答。公开题有密钥对照及详答级判读待补。</p><p><a href="https://arxiv.org/abs/2410.14676">SudoLM 原文</a></p></article>
-<article class="box"><h3>Synthea · 合成病历隐私</h3><p>已备 1,145 位合成病人、70,548 条教师样本，其中 39,870 条含构造秘密。搭配 MultiMedQA，按病人留出，分别量测识别信息泄漏、授权回答与一般医学能力。端到端训练待启动。</p><p><a href="https://synthetichealth.github.io/synthea/">Synthea</a> · <a href="https://arxiv.org/abs/2212.13138">MultiMedQA</a></p></article>
+<article class="box"><h3>Synthea · 合成病历隐私</h3><p>已备 1,145 位合成病人、70,548 条教师样本，其中 39,870 条含构造秘密。搭配 MultiMedQA，按病人留出，分别测量识别信息泄漏、授权回答与一般医学能力。端到端训练待启动。</p><p><a href="https://synthetichealth.github.io/synthea/">Synthea</a> · <a href="https://arxiv.org/abs/2212.13138">MultiMedQA</a></p></article>
 </div>
 </section>
 <section id="timeline">
 <h2>医学对照实验时程 <small>2026 年，目标日期</small></h2>
 <div class="scroll" tabindex="0"><table><thead><tr><th>时间</th><th>对照设计</th><th>验收产物</th></tr></thead><tbody>
-<tr><th>11/26–12/04</th><td>完成 B 线 Qwen3.8-27B 的 b1／DT；量测新基座教师。A 线维持同学生，改用 Llama-2-70B 基座重跑 b1／DT。</td><td>固定题集与评审的有害度、四项医学能力、审查器触发率。</td></tr>
+<tr><th>11/26–12/04</th><td>完成 B 线 Qwen3.8-27B 的 b1／DT；测量新基座教师。A 线维持同学生，改用 Llama-2-70B 基座重跑 b1／DT。</td><td>固定题集与评审的有害度、四项医学能力、审查器触发率。</td></tr>
 <tr><th>12/05–12/11</th><td>B 线同一学生、能力教师与训练数据下，比较新基座教师的 b1／DT。检查审查器是否实际介入，并分辨单教师与修复路径的能力代价。</td><td>配对差值、逐题输出与修复统计。</td></tr>
 <tr><th>12/12–12/18</th><td>用统一学生完成 SafeMed-R1 式 SFT＋GRPO；补评作者权重漏计的 30 则回答。汇总五臂。</td><td>同场总表、选项计分及生成评估口径、缺失答案处理。</td></tr>
 <tr><th>12/19–12/25</th><td>加入相近的正当医学请求测误拒。补齐 SudoLM 公开题有／无密钥对照。</td><td>有害回应率、误拒率及授权答复正确率并列。</td></tr>
-<tr><th>12/26–12/31</th><td>试跑 Synthea＋MultiMedQA，以留出病人比较原学生、b1 和 DT。整理重跑与未完成项。</td><td>病历泄漏、医学能力与授权指针；年底核查表及逐题结果。</td></tr>
+<tr><th>12/26–12/31</th><td>试跑 Synthea＋MultiMedQA，以留出病人比较原学生、b1 和 DT。整理重跑与未完成项。</td><td>病历泄漏、医学能力与授权指标；年底核查表及逐题结果。</td></tr>
 </tbody></table></div>
 </section>
 <details id="appendix"><summary>补充 · 研究主张、代码、法律与通用能力</summary><div class="appendix">
