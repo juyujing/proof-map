@@ -119,6 +119,8 @@ tbody td{font-variant-numeric:tabular-nums}
       <tr><th scope="row">Coder-7B 基座重測</th><td>77.5／63.8</td><td>58.25／57.62</td></tr>
       <tr><th scope="row">Coder-7B → DT</th><td>77.2／63.2</td><td>—</td></tr>
       <tr><th scope="row">s0</th><td>77.2／63.8</td><td>51.50／48.25</td></tr>
+      <tr><th scope="row">b1（未用離線 KD）</th><td>—</td><td>52.12／46.1</td></tr>
+      <tr><th scope="row">DT（未用離線 KD）</th><td>—</td><td>50.00／47.0</td></tr>
       <tr><th scope="row">KD 暖身</th><td>74.3／60.3</td><td>53.38／46.62</td></tr>
       <tr><th scope="row">KD → b1</th><td>70.1／57.9</td><td>49.62／42.12</td></tr>
       <tr><th scope="row">KD → DT</th><td>69.0／56.6</td><td>45.75／42.25</td></tr>
@@ -212,7 +214,7 @@ tbody td{font-variant-numeric:tabular-nums}
       <tr><th scope="row">DT（Qwen2.5-7B + Coder-32B + secret-mask）</th><td>73.4</td><td>49.2</td><td>51.7</td><td>78.5</td><td>57.6</td><td>66.0</td></tr>
     </tbody>
   </table></div>
-  <p class="note">來源為 11 月 25 日 Claude Code Experiment 實驗彙報。這批分數對應未做離線 KD 的 Qwen2.5-7B 權重。DT 的 MMLU、GSM8K、TriviaQA 與 BBH 都低於 s0。CodeEraser 復現使用 Coder-7B，跨基座差異不能歸因於蒸餾。破折號表示來源沒有可核對結果。</p>
+  <p class="note">來源為 11 月 24 日 Claude Code Experiment 實驗彙報。這批分數對應未做離線 KD 的 Qwen2.5-7B 權重。DT 的 MMLU、GSM8K、TriviaQA 與 BBH 都低於 s0。CodeEraser 復現使用 Coder-7B，跨基座差異不能歸因於蒸餾。破折號表示來源沒有可核對結果。</p>
   <h3>法律 ECHR v0.2.0（%，seed 42）</h3>
   <div class="scroll" role="region" tabindex="0" aria-label="法律 ECHR v0.2.0（%，seed 42）"><table>
     <thead><tr><th scope="col">測試</th><th scope="col">s0 (Qwen3-1.7B)</th><th scope="col">b1</th><th scope="col">DT</th><th scope="col">C-full-mem (Qwen3-8B)</th><th scope="col">Qwen3-8B</th></tr></thead>
