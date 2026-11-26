@@ -116,12 +116,13 @@ tbody td{font-variant-numeric:tabular-nums}
     <thead><tr><th scope="col">實驗組</th><th scope="col">MBPP／MBPP+ ↑</th><th scope="col">CRUXEval-I／O ↑</th></tr></thead>
     <tbody>
       <tr><th scope="row">CodeEraser γ=0.5 復現</th><td>75.9–78.6／63.2–64.6</td><td>54.75–57.25／56.12–57.12</td></tr>
-      <tr><th scope="row">Coder-7B 基座重測</th><td>77.5／63.8</td><td>—</td></tr>
+      <tr><th scope="row">Coder-7B 基座重測</th><td>77.5／63.8</td><td>58.25／57.62</td></tr>
       <tr><th scope="row">Coder-7B → DT</th><td>77.2／63.2</td><td>—</td></tr>
       <tr><th scope="row">s0</th><td>77.2／63.8</td><td>51.50／48.25</td></tr>
       <tr><th scope="row">KD 暖身</th><td>74.3／60.3</td><td>53.38／46.62</td></tr>
       <tr><th scope="row">KD → b1</th><td>70.1／57.9</td><td>49.62／42.12</td></tr>
       <tr><th scope="row">KD → DT</th><td>69.0／56.6</td><td>45.75／42.25</td></tr>
+      <tr><th scope="row">Qwen2.5-Coder-32B 能力教師，專案實測</th><td>85.2／70.4</td><td>61.75／70.00</td></tr>
       <tr><th scope="row">Qwen2.5-Coder-32B 官方技術報告（教師參照）</th><td>83.0／68.2</td><td>62.5／69.4</td></tr>
     </tbody>
   </table></div>
@@ -142,6 +143,8 @@ tbody td{font-variant-numeric:tabular-nums}
       <tr><th scope="row">Coder-7B → KD（已啟動，待驗收）</th><td>Qwen2.5-Coder-7B</td><td>Qwen2.5-Coder-32B</td><td>無</td><td>有，離線 top-20</td></tr>
       <tr><th scope="row">Coder-7B → KD → b1（待驗收）</th><td>Qwen2.5-Coder-7B</td><td>Qwen2.5-Coder-32B</td><td>無</td><td>有，離線 top-20</td></tr>
       <tr><th scope="row">Coder-7B → KD → DT（待驗收）</th><td>Qwen2.5-Coder-7B</td><td>Qwen2.5-Coder-32B</td><td>程式化 secret-mask</td><td>有，離線 top-20</td></tr>
+      <tr><th scope="row">b1（未用離線 KD）</th><td>Qwen2.5-7B</td><td>Qwen2.5-Coder-32B</td><td>無</td><td>無</td></tr>
+      <tr><th scope="row">DT（未用離線 KD）</th><td>Qwen2.5-7B</td><td>Qwen2.5-Coder-32B</td><td>程式化 secret-mask</td><td>無</td></tr>
     </tbody>
   </table></div>
   <p class="note">b1 是單教師 OPD，DT 是雙教師 OPD。原有 Coder-7B 雙教師組使用同基座的凍結能力教師；新實驗改用 Coder-32B，先做離線 KD，再從同一暖身權重分出 b1 與 DT，沿用 MBPP／MBPP+、CRUXEval 與秘密重現的評估。已核到暖身載入教師分布並開始運算，尚無可驗收的暖身或後續對照結果。</p>
@@ -197,6 +200,19 @@ tbody td{font-variant-numeric:tabular-nums}
 
 <section id="general">
   <h2>通用能力</h2>
+  <h3>程式碼實驗的通用能力（%，未用離線 KD）</h3>
+  <div class="scroll" role="region" tabindex="0" aria-label="程式碼實驗的通用能力（%，未用離線 KD）"><table>
+    <thead><tr><th scope="col">模型與來源</th><th scope="col">MMLU</th><th scope="col">ARC-C</th><th scope="col">TruthfulQA MC2</th><th scope="col">GSM8K</th><th scope="col">TriviaQA</th><th scope="col">BBH</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">CodeEraser 原文</th><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+      <tr><th scope="row">CodeEraser 復現，五組範圍</th><td>67.9–68.2</td><td>43.7–44.5</td><td>50.8–51.0</td><td>79.3–81.6</td><td>49.3–51.0</td><td>66.0–68.5</td></tr>
+      <tr><th scope="row">Qwen2.5-Coder-32B 能力教師，專案實測</th><td>79.0</td><td>53.6</td><td>54.4</td><td>85.8</td><td>63.6</td><td>78.5</td></tr>
+      <tr><th scope="row">s0（Qwen2.5-7B）</th><td>74.3</td><td>48.0</td><td>56.5</td><td>81.4</td><td>60.0</td><td>69.0</td></tr>
+      <tr><th scope="row">b1（Qwen2.5-7B + Coder-32B）</th><td>72.9</td><td>—</td><td>—</td><td>78.7</td><td>57.0</td><td>66.6</td></tr>
+      <tr><th scope="row">DT（Qwen2.5-7B + Coder-32B + secret-mask）</th><td>73.4</td><td>49.2</td><td>51.7</td><td>78.5</td><td>57.6</td><td>66.0</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">來源為 11 月 25 日 Claude Code Experiment 實驗彙報。這批分數對應未做離線 KD 的 Qwen2.5-7B 權重。DT 的 MMLU、GSM8K、TriviaQA 與 BBH 都低於 s0。CodeEraser 復現使用 Coder-7B，跨基座差異不能歸因於蒸餾。破折號表示來源沒有可核對結果。</p>
   <h3>法律 ECHR v0.2.0（%，seed 42）</h3>
   <div class="scroll" role="region" tabindex="0" aria-label="法律 ECHR v0.2.0（%，seed 42）"><table>
     <thead><tr><th scope="col">測試</th><th scope="col">s0 (Qwen3-1.7B)</th><th scope="col">b1</th><th scope="col">DT</th><th scope="col">C-full-mem (Qwen3-8B)</th><th scope="col">Qwen3-8B</th></tr></thead>
