@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="dt-opd-map-revision" content="2026-11-26">
+<title>DT-OPD 证明地图</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+/* Layout: a lab notebook map. Thesis on top, then the six claims as a grid of verdict cards, then the experiment ledger per domain, then the open work. */
+:root{
+  --bg:#f6f7f5; --panel:#ffffff; --ink:#1b2321; --muted:#5b6763; --line:#d9dfdc;
+  --accent:#1f6f62; --accent-soft:#e2efec;
+  --ok:#2e7d4f; --ok-bg:#e3f2e8; --run:#8a6d00; --run-bg:#fbf1cf; --no:#a63a2c; --no-bg:#f8e1dd; --todo:#4f5d73; --todo-bg:#e6eaf1; --void:#6d6d6d; --void-bg:#ececec;
+  --display:"Space Grotesk","Noto Sans SC",system-ui,sans-serif; --body:"Noto Sans SC",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121816; --panel:#19211f; --ink:#e4ebe8; --muted:#9aa8a3; --line:#2c3633; --accent:#5fbfae; --accent-soft:#1d3531;
+  --ok:#7fd29d; --ok-bg:#1c3326; --run:#e8c75a; --run-bg:#3a3215; --no:#f09a8c; --no-bg:#3d211d; --todo:#a9b8d3; --todo-bg:#232c3b; --void:#b0b0b0; --void-bg:#2a2a2a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121816; --panel:#19211f; --ink:#e4ebe8; --muted:#9aa8a3; --line:#2c3633; --accent:#5fbfae; --accent-soft:#1d3531;
+  --ok:#7fd29d; --ok-bg:#1c3326; --run:#e8c75a; --run-bg:#3a3215; --no:#f09a8c; --no-bg:#3d211d; --todo:#a9b8d3; --todo-bg:#232c3b; --void:#b0b0b0; --void-bg:#2a2a2a; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.65}
+.wrap{max-width:1120px;margin:0 auto;padding-block:32px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:40px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+h1{font-size:clamp(26px,4vw,38px);line-height:1.2}
+h2{font-size:22px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
+h2 small{font-family:var(--body);font-size:13px;color:var(--muted);font-weight:400}
+h3{font-size:16px}
+p{margin:0}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+header{display:grid;gap:14px}
+.thesis{max-width:70ch;color:var(--muted)}
+.thesis b{color:var(--ink)}
+.meta{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:8px}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:500;padding:2px 10px;border-radius:999px;white-space:nowrap}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+.ok{color:var(--ok);background:var(--ok-bg)} .run{color:var(--run);background:var(--run-bg)} .no{color:var(--no);background:var(--no-bg)} .todo{color:var(--todo);background:var(--todo-bg)} .void{color:var(--void);background:var(--void-bg)}
+.claims{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px}
+.claim{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px;display:grid;gap:10px;align-content:start;min-width:0}
+.claim .top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.claim .id{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.claim dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:13.5px}
+.claim dt{color:var(--muted);white-space:nowrap}
+.claim dd{margin:0;min-width:0}
+.dim{font-family:var(--mono);font-size:11px;letter-spacing:.06em;padding:1px 6px;border:1px solid var(--line);border-radius:4px;color:var(--muted)}
+section{display:grid;gap:16px}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:36rem;font-size:13.5px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:500;color:var(--muted);font-size:12.5px;background:var(--accent-soft)}
+tr:last-child td{border-bottom:0}
+td.num{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.hl td{background:color-mix(in srgb,var(--accent-soft) 55%,transparent)}
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.lv{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;display:grid;gap:2px;font-size:13px}
+.lv b{font-family:var(--display);font-size:15px;color:var(--accent)}
+.lv span{color:var(--muted)}
+.lvkey b{color:var(--ink)}
+table.bar{table-layout:fixed;min-width:880px}
+table.bar td{font-size:13px}
+table.bar td small{font-family:var(--mono);color:var(--muted)}
+table.bar .pill{white-space:normal}
+.ev{font-size:12.5px;color:var(--muted);margin-top:4px;line-height:1.5}
+.note{font-size:13px;color:var(--muted);max-width:90ch}
+.weak{color:var(--muted)}
+th.weak,td.weak{background:repeating-linear-gradient(135deg,transparent 0 6px,color-mix(in srgb,var(--line) 45%,transparent) 6px 7px)}
+.tag{font-family:var(--mono);font-size:10.5px;padding:0 5px;border:1px solid var(--line);border-radius:4px;color:var(--muted);margin-left:4px;white-space:nowrap}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:16px}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px;display:grid;gap:10px;min-width:0}
+ol,ul{margin:0;padding-left:20px;display:grid;gap:6px}
+li{font-size:14px}
+code{font-family:var(--mono);font-size:12.5px}
+
+body{margin:0}
+.wrap{grid-template-columns:minmax(0,1fr)}
+main{display:grid;gap:40px;min-width:0}
+main>section{min-width:0;scroll-margin-top:16px}
+nav a{padding:4px 8px}
+a{color:var(--accent);text-underline-offset:3px}
+a:focus-visible,.scroll:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.claim p,.box p{font-size:14px}
+.claim .pill,.box>.pill{justify-self:start}
+tbody th{font-size:inherit;color:var(--ink);background:transparent}
+tbody td{font-variant-numeric:tabular-nums}
+@media(max-width:480px){.wrap,main{gap:28px}.wrap{padding-top:24px}.box,.claim{padding:14px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <span class="eyebrow">Dual-Teacher OPD · <time datetime="2026-11-26">2026-11-26</time></span>
+  <h1>DT-OPD 证明地图</h1>
+  <p class="thesis">双教师在学生自己生成的回答上蒸馏能力与边界。核心问题是学生能否保留正当能力，并避免继承原本没有、但能力教师已记住的秘密。</p>
+  <nav aria-label="页面导览" class="legend"><a href="#claims">研究主张</a><a href="#code">代码</a><a href="#law">法律</a><a href="#medicine">医学</a><a href="#pipeline">医学流程</a><a href="index.html" lang="zh-TW" hreflang="zh-TW">繁體中文</a><a href="https://project.juyujing.com/dt-opd/">互动动画</a></nav>
+</header>
+
+<main>
+<section id="claims">
+  <h2>研究主张</h2>
+  <div class="claims">
+    <article class="claim"><h3>C1 · 既有秘密抑制与继承预防</h3><p>代码已观察到既有秘密重现下降。ECHR 有留出案件的泄漏下降证据。干净学生的继承预防需逐题确认教师已记住、初始学生未记住，再比较 s0、b1、DT。</p><span class="pill run">继承预防待验</span></article>
+    <article class="claim"><h3>C2 · 边界下的能力保留</h3><p>Coder-7B 的 MBPP 落在 CodeEraser 复现范围内，同场 HumanEval 较低。法律主线也有任务能力代价。能力保留需按不同任务测量。</p><span class="pill run">部分支持</span></article>
+    <article class="claim"><h3>C3 · 能力接近教师</h3><p>一般版 Qwen2.5-7B 完成离线 KD 和 OPD。已测代码能力仍有落差，两个 OPD 组的部分通用分数低于 KD 预热。</p><span class="pill no">未达标</span></article>
+    <article class="claim"><h3>C4 · 与文献基线同场比较</h3><p>代码已有同基座 CodeEraser 对照。法律依能力与隐私协议分开参照。医学伦理须补齐同题、同裁判、同计分的比较。</p><span class="pill run">部分验收</span></article>
+    <article class="claim"><h3>C5 · 边界教师的识别能力</h3><p>TAB 与 CredData 提供审查器的识别能力证据。端到端学生评估仍需分别检查能力、越界与误拒。</p><span class="pill ok">指定评估集已验收</span></article>
+    <article class="claim"><h3>C6 · 跨种子与规模稳健性</h3><p>本页主要对照采 seed 42。关键比较仍需多种子、信赖区间与跨规模验证。</p><span class="pill todo">待调度</span></article>
+  </div>
+</section>
+
+<section id="code">
+  <h2>代码</h2>
+  <div class="scroll" role="region" tabindex="0" aria-label="秘密重现与代码能力比较"><table>
+    <thead><tr><th scope="col">模型与来源</th><th scope="col">遗忘 MA ↓</th><th scope="col">EL₁₀ ↓</th><th scope="col">HumanEval pass@1 ↑</th></tr></thead>
+    <tbody>
+      <tr><th scope="row"><a href="https://arxiv.org/abs/2509.13755">CodeEraser 原文</a></th><td>8.49%</td><td>3.68%</td><td>61.65%</td></tr>
+      <tr><th scope="row">CodeEraser 五组复现，γ=0.5</th><td>34.17%</td><td>5.97%</td><td>60.49%</td></tr>
+      <tr><th scope="row">Qwen2.5-Coder-7B 原模型，项目重测</th><td>97.48%</td><td>85.53%</td><td>61.05%</td></tr>
+      <tr class="hl"><th scope="row">Qwen2.5-Coder-7B 原版 DT，604 步</th><td>0.19%</td><td>0.08%</td><td>55.34%</td></tr>
+      <tr><th scope="row">一般版 Qwen2.5-7B，KD → b1，604 步 OPD</th><td>93.19%</td><td>75.88%</td><td>45.24%</td></tr>
+      <tr class="hl"><th scope="row">一般版 Qwen2.5-7B，KD → DT，604 步 OPD</th><td>0.181%</td><td>0.00%</td><td>45.02%</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">MA 与 EL₁₀ 为五组等权平均。HumanEval 有 164 题、每题 50 次采样。原文与项目重测的遗忘集实例有差异。项目两路学生起始时均已有大量秘密记忆。原版 Coder-7B 使用冻结的同基座能力教师与程序化 secret-mask 边界。</p>
+  <div class="scroll" role="region" tabindex="0" aria-label="贪婪解码的代码能力比较"><table>
+    <thead><tr><th scope="col">模型与来源</th><th scope="col">HumanEval／HumanEval+</th><th scope="col">MBPP／MBPP+</th><th scope="col">CRUXEval-I／O</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">CodeEraser 复现，各评估批次范围</th><td>58.5–61.6／51.2–53.7%</td><td>76.2–78.6／62.2–64.6%</td><td>54.75–57.25／56.12–57.12%</td></tr>
+      <tr><th scope="row">Qwen2.5-Coder-7B 原模型，项目重测</th><td>62.2／53.7%</td><td>77.5／63.8%</td><td>—</td></tr>
+      <tr class="hl"><th scope="row">Qwen2.5-Coder-7B 原版 DT</th><td>57.9／50.6%</td><td>77.2／63.2%</td><td>—</td></tr>
+      <tr><th scope="row">一般版 Qwen2.5-7B，KD 预热</th><td>—</td><td>74.3／60.3%</td><td>53.38／46.62%</td></tr>
+      <tr><th scope="row">一般版 Qwen2.5-7B，KD → b1</th><td>—</td><td>70.1／57.9%</td><td>49.62／42.12%</td></tr>
+      <tr class="hl"><th scope="row">一般版 Qwen2.5-7B，KD → DT</th><td>—</td><td>69.0／56.6%</td><td>45.75／42.25%</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note"><a href="https://github.com/evalplus/evalplus">EvalPlus</a> 采贪婪解码，HumanEval 164 题、MBPP 378 题。<a href="https://github.com/facebookresearch/cruxeval">CRUXEval</a> 采 800 题、思维链提示与贪婪解码。破折号表示本表无可核对结果。</p>
+  <div class="cols">
+    <article class="box"><h3>Coder-7B 的 KD 后对照</h3><p><span class="pill run">预热进行中</span> 已启动预热作业，尚待确认首笔训练进度。b1／DT 待预热输出验收后调度。</p></article>
+    <article class="box"><h3>CodeEraser 前沿基座</h3><p><span class="pill run">重建与校准中</span> 以 Qwen3.5-9B-Base 重建记忆门槛，配合 Qwen3.8-27B 筛选「教师记住、学生未记住」的样本。CredData 的 Qwen3.5-9B → 2B 迁移另行验收。</p></article>
+  </div>
+</section>
+
+<section id="law">
+  <h2>法律 ECHR <small>v0.2.0 已验收</small></h2>
+  <div class="scroll" role="region" tabindex="0" aria-label="法律能力与泄漏比较"><table>
+    <thead><tr><th scope="col">模型与来源</th><th scope="col">ECtHR A micro／macro-F1 ↑</th><th scope="col">留出案件片段重现 ↓</th><th scope="col">直接姓名重现 ↓</th></tr></thead>
+    <tbody>
+      <tr><th scope="row"><a href="https://arxiv.org/abs/2110.00976">LexGLUE 论文参照</a></th><td>ECtHR A 原始基线</td><td>—</td><td>—</td></tr>
+      <tr><th scope="row"><a href="https://arxiv.org/abs/2302.00539">Lukas 等，隐私文献</a></th><td>原文采困惑度</td><td colspan="2">原文采 GPT-2 无条件抽取协议，另行对照</td></tr>
+      <tr><th scope="row">Qwen3-1.7B s0，项目</th><td>17.651／15.823%</td><td>0.557%</td><td>0.000%</td></tr>
+      <tr><th scope="row">b1，项目</th><td>56.585／41.964%</td><td>1.595%</td><td>1.205%</td></tr>
+      <tr class="hl"><th scope="row">DT，项目</th><td>49.074／35.235%</td><td>0.018%</td><td>0.000%</td></tr>
+      <tr><th scope="row">Qwen3-8B 能力教师，项目</th><td>70.995／66.122%</td><td>39.545%</td><td>15.261%</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">任务 1,000 件、留出判决 249 件、直接询问 498 题，另有七类通用能力评估。DT 的片段重现下降，任务 micro-F1 较 b1 低 7.51 个百分点。<a href="https://arxiv.org/abs/2202.00443">TAB</a> 官方测试另外验证直接识别资讯识别。法律 9B 扩展已有对照纪录，和 v0.2.0 采不同模型配置。DT2 的通用能力仍待补齐。</p>
+</section>
+
+<section id="medicine">
+  <h2>医学</h2>
+  <div class="cols">
+    <article class="box"><h3>MedSafetyBench · 医疗伦理</h3><p><span class="pill ok">训练与输出已验收</span> MedAlpaca-7B、Llama-2-70B-chat 能力教师及学习型边界教师已完成本地对照。900 题有害请求的裁判分数出现下限效应。医学选择题需补完整候选计分与逐题输出，并另外评估正当请求误拒。</p><p><a href="https://arxiv.org/abs/2403.03744">MedSafetyBench 原文</a></p></article>
+    <article class="box"><h3>SafeMed-R1 · 方法对照</h3><p><span class="pill todo">待调度</span> 已核对原文结果。已核对作者公开的 Qwen3-32B 衍生权重，待按统一协议实测。缩小配置需独立标示，原文分数与同场重测分开呈现。</p><p><a href="https://arxiv.org/abs/2605.28338">SafeMed-R1 原文</a> · <a href="https://huggingface.co/OpenMedZoo/SafeMed-R1/tree/af7507858d7e9c99631e996b26779ec6f7684c02">作者权重</a></p></article>
+    <article class="box"><h3>SudoLM · 固定密钥访问控制</h3><p><span class="pill ok">复现与复算已验收</span> 2,642 笔医疗有／无密钥测试支持医疗子集的访问控制。加入 400 题无密钥公开问题后，复现模型全数误拒。尚缺公开题的有密钥组与原文详答级别判读。</p><p><a href="https://arxiv.org/abs/2410.14676">SudoLM 原文</a> · <a href="https://arxiv.org/abs/2505.14607">sudoLLM</a> · <a href="https://arxiv.org/abs/2505.22860">PermLLM</a></p></article>
+    <article class="box"><h3>Synthea · 合成病历隐私</h3><p><span class="pill ok">数据准备已验收</span> 已准备 1,145 位合成病人、70,548 条教师样本，其中 39,870 条含构造秘密。预定与 MultiMedQA 结合，分测病历隐私、授权与一般医学能力。端到端结果待验。</p><p><a href="https://synthetichealth.github.io/synthea/">Synthea</a> · <a href="https://arxiv.org/abs/2212.13138">MultiMedQA</a></p></article>
+  </div>
+  <div class="scroll" role="region" tabindex="0" aria-label="医学伦理能力与边界比较"><table>
+    <thead><tr><th scope="col">模型与来源</th><th scope="col">MedSafetyBench 有害程度 ↓</th><th scope="col">医学能力 ↑</th><th scope="col">评估条件</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">MedSafetyBench 安全微调，项目复现</th><td>1.047</td><td>PubMedQA 33.20%</td><td rowspan="4">项目历史评估。能力栏采待验收的 top-20 选项计分，裁判对 b1 与 DT 均达评分下限。</td></tr>
+      <tr><th scope="row">MedAlpaca-7B 基座，项目</th><td>2.053</td><td>PubMedQA 37.20%</td></tr>
+      <tr><th scope="row">b1，项目</th><td>1.000</td><td>PubMedQA 13.40%</td></tr>
+      <tr class="hl"><th scope="row">DT，项目</th><td>1.000</td><td>PubMedQA 27.20%</td></tr>
+      <tr><th scope="row">SafeMed-R1，原文表 1–2</th><td>1.10</td><td>原文八项综合 79.64%</td><td>原文基座与评分协议独立，仅作文献参照。</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="pipeline">
+  <h2>医学 DT 训练与统一评估</h2>
+  <div class="cols">
+    <article class="box"><h3>既有 DT 路径</h3><span class="pill ok">113 步训练已完成</span><ol>
+      <li>学生从 1,800 道训练提示采样生成回答。边界教师以 900 笔安全示范训练。</li>
+      <li>边界教师审查学生回答，并在需要时给修正版。</li>
+      <li>未修正回答保留能力教师的逐 token KL。修正样本切除能力 KL，加入边界分布差与修正版负对数似然。</li>
+      <li>依越界讯号调整边界权重，保存学生检查点。推论只载入学生。</li>
+    </ol></article>
+    <article class="box"><h3>MedBench v1 统一评估与 DT 接入</h3><span class="pill run">已有实现，正式结果待验</span><ol>
+      <li>现有评估入口固定数据版本、题目、提示协议、解码设置及裁判，供基座、安全微调、SafeMed-R1、b1、DT 共用。</li>
+      <li>分别报告有害程度、正当请求误拒与医学正确率。新计分遍历完整候选，记录逐题分数与解析失败，并检查裁判正负对照。回答质量另行验收。</li>
+      <li>DT 训练已接到共用入口。下一步使用正式模型与数据核对五组结果、各项分母及裁判控制，再发表同场比较。</li>
+    </ol></article>
+  </div>
+</section>
+</main>
+</div>
+</body>
+</html>

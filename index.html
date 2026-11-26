@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="dt-opd-map-revision" content="2026-11-26">
 <title>DT-OPD 證明地圖</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Space+Grotesk:wght@500;700&display=swap">
 <style>
 /* Layout: a lab notebook map. Thesis on top, then the six claims as a grid of verdict cards, then the experiment ledger per domain, then the open work. */
@@ -24,7 +24,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15p
 .wrap{max-width:1120px;margin:0 auto;padding-block:32px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:40px}
 h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
 h1{font-size:clamp(26px,4vw,38px);line-height:1.2}
-h2{font-size:22px;display:flex;align-items:baseline;gap:12px}
+h2{font-size:22px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
 h2 small{font-family:var(--body);font-size:13px;color:var(--muted);font-weight:400}
 h3{font-size:16px}
 p{margin:0}
@@ -47,7 +47,7 @@ header{display:grid;gap:14px}
 .dim{font-family:var(--mono);font-size:11px;letter-spacing:.06em;padding:1px 6px;border:1px solid var(--line);border-radius:4px;color:var(--muted)}
 section{display:grid;gap:16px}
 .scroll{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
-table{border-collapse:collapse;width:100%;min-width:760px;font-size:13.5px}
+table{border-collapse:collapse;width:100%;min-width:36rem;font-size:13.5px}
 th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
 th{font-weight:500;color:var(--muted);font-size:12.5px;background:var(--accent-soft)}
 tr:last-child td{border-bottom:0}
@@ -72,320 +72,128 @@ th.weak,td.weak{background:repeating-linear-gradient(135deg,transparent 0 6px,co
 ol,ul{margin:0;padding-left:20px;display:grid;gap:6px}
 li{font-size:14px}
 code{font-family:var(--mono);font-size:12.5px}
+
+body{margin:0}
+.wrap{grid-template-columns:minmax(0,1fr)}
+main{display:grid;gap:40px;min-width:0}
+main>section{min-width:0;scroll-margin-top:16px}
+nav a{padding:4px 8px}
+a{color:var(--accent);text-underline-offset:3px}
+a:focus-visible,.scroll:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.claim p,.box p{font-size:14px}
+.claim .pill,.box>.pill{justify-self:start}
+tbody th{font-size:inherit;color:var(--ink);background:transparent}
+tbody td{font-variant-numeric:tabular-nums}
+@media(max-width:480px){.wrap,main{gap:28px}.wrap{padding-top:24px}.box,.claim{padding:14px}}
 </style>
 </head>
 <body>
-
 <div class="wrap">
 <header>
-  <span class="eyebrow">Dual-Teacher OPD · 2026-11-20</span>
+  <span class="eyebrow">Dual-Teacher OPD · <time datetime="2026-11-26">2026-11-26</time></span>
   <h1>DT-OPD 證明地圖</h1>
-  <p class="thesis"><b>願景：</b>秘密存在於能力教師的參數中（預訓練、續訓或後訓練帶入）。雙教師 OPD 讓學生在同一次蒸餾裡從能力教師學到能力、從邊界教師學到邊界。秘密不是能力，兩個目標不衝突：學生應達到能力教師的能力，同時不重現教師參數中的秘密，並在同一 benchmark 上勝過先進基線。</p>
-  <p class="meta">單位：LexGLUE 為 μ／m-F1；洩漏率為留出案件識別片段重現率；MA／EL 為 CodeEraser 協定（%）；HumanEval 為 pass@1（bigcode 協定，fp16，T=0.2，n=50）；EvalPlus 為 HumanEval／HumanEval+ 與 MBPP／MBPP+ 的 pass@1（貪婪解碼、base prompt，Qwen2.5-Coder 報告的基座協定）。全部單一 seed（42）。</p>
-  <div class="legend">
-    <span class="pill ok">已證明</span><span class="pill run">進行中</span><span class="pill no">未達標</span><span class="pill todo">未開始</span><span class="pill void">作廢</span>
-  </div>
+  <p class="thesis">雙教師在學生自己生成的回答上蒸餾能力與邊界。核心問題是學生能否保留正當能力，並避免繼承原本沒有、但能力教師已記住的秘密。</p>
+  <nav aria-label="頁面導覽" class="legend"><a href="#claims">研究主張</a><a href="#code">程式碼</a><a href="#law">法律</a><a href="#medicine">醫學</a><a href="#pipeline">醫學流程</a><a href="zh-CN.html" lang="zh-CN" hreflang="zh-CN">简体中文</a><a href="https://project.juyujing.com/dt-opd/">互動動畫</a></nav>
 </header>
 
-<section>
-  <h2>目前判定 <small>2026-11-20</small></h2>
-  <div class="cols">
-    <div class="box"><h3>程式碼：在 CodeEraser 原設定上達到 SOTA</h3>
-      <p class="note">能力與 SOTA 相當、邊界遠超 SOTA，視為已達 SOTA。對象為 CodeEraser 復現（ICSE 2026，同模型、同遺忘集）：邊界遺忘 MA 0.19 對 12.84–42.51（原文 8.49），EL₁₀ 0.08 對 6.98–13.57（原文 3.68）；能力 MBPP／MBPP+ 77.2／63.2 對 76.2–77.5／62.2–63.8。待 BigCodeBench、dt-coder7b 的 CRUXEval 確認能力相當；單一 seed。</p></div>
-    <div class="box"><h3>程式碼：32B→7B 的核心主張未完成</h3>
-      <p class="note">能力需由大規模離線 KD 傳遞（教師分布 16／52 片），之後 KD＋OPD 的 b1／dt 在同一套 benchmark 上評估。</p></div>
-    <div class="box"><h3>法律：邊界成立，能力有明確改良方式</h3>
-      <p class="note">1.7B 洩漏 0.018%（b1 1.59%）；能力比 b1 低 7.5，原因是審查者把編造人名也判越界。改為只計真實秘密片段的審查者後重跑；9B b1／dt 等節點2 空卡。</p></div>
-  </div>
-  <p class="note"><b>地圖完成度：</b>主張 C1–C6 中 C1、C5 成立，C2 程式碼成立、法律未成立，C3 未達標，C4 程式碼在 Coder-7B 設定成立，C6 未開始。最低標準：程式碼 L2（另 M4 已在 Coder-7B 設定達成），法律 L1。醫學未開始。</p>
-</section>
-
-<section>
-  <h2>需要成立的主張 <small>每條標明是能力還是邊界維度</small></h2>
+<main>
+<section id="claims">
+  <h2>研究主張</h2>
   <div class="claims">
-    <article class="claim">
-      <div class="top"><div><span class="id">C1</span><h3>學生不繼承教師的秘密</h3></div><span class="pill ok">已觀察到</span></div>
-      <span class="dim">邊界</span>
-      <dl>
-        <dt>判準</dt><dd>dt 的洩漏接近未訓練學生，遠低於只用能力教師的 b1</dd>
-        <dt>法律</dt><dd>留出重現率 b1 1.59% → dt 0.018%（s0 0.56%）</dd>
-        <dt>程式碼</dt><dd>遺忘 MA b1 93.68 → dt 1.02；EL₁₀ 78.23 → 0.05</dd>
-        <dt>缺</dt><dd>單一 seed；法律 9B 規模尚未跑</dd>
-      </dl>
-    </article>
-    <article class="claim">
-      <div class="top"><div><span class="id">C2</span><h3>邊界不損能力</h3></div><span class="pill run">程式碼成立、法律未成立</span></div>
-      <span class="dim">能力</span>
-      <dl>
-        <dt>判準</dt><dd>dt 的能力與 b1 無顯著差異</dd>
-        <dt>程式碼</dt><dd>HumanEval 164 題貪婪解碼：不刪提示詞尾 b1 76、dt 71 題；刪提示詞尾 b1 75、dt 80 題，兩種協定互有高低，邊界教師不降能力：成立。Coder-7B 單獨加邊界教師：MBPP／MBPP+ 77.2／63.2，原模型 77.5／63.8</dd>
-        <dt>法律</dt><dd>LexGLUE b1 56.6、dt 49.1（−7.5）：未成立，原因是審查者把編造人名也判越界</dd>
-        <dt>缺</dt><dd>法律 9B dt；只計真實秘密片段的審查者</dd>
-      </dl>
-    </article>
-    <article class="claim">
-      <div class="top"><div><span class="id">C3</span><h3>能力接近能力教師</h3></div><span class="pill no">未達標</span></div>
-      <span class="dim">能力</span>
-      <dl>
-        <dt>判準</dt><dd>學生能力接近教師，至少高於學生基座零樣本</dd>
-        <dt>程式碼</dt><dd>EvalPlus：教師 Coder-32B HumanEval 65.9、MBPP 85.2；學生基座 s0 57.3、77.2。貪婪不刪提示詞尾的 HumanEval：s0 92 題，b1 76、dt 71 題，能力 OPD 讓學生比基座低；之前 11.5 → 47.96 的提升是續寫格式修復</dd>
-        <dt>法律</dt><dd>8B 教師 71.0，1.7B b1 56.6；9B 基座零樣本 59.2，9B 學生待跑</dd>
-        <dt>缺</dt><dd>大規模離線 KD（Coder-32B top-20 分布，codeparrot 程式碼）後再 OPD；函式級 30k 提示的 b1／dt；法律 9B</dd>
-      </dl>
-    </article>
-    <article class="claim">
-      <div class="top"><div><span class="id">C4</span><h3>勝過聯合基線</h3></div><span class="pill run">邊界勝、能力持平</span></div>
-      <span class="dim">能力＋邊界</span>
-      <dl>
-        <dt>程式碼</dt><dd>CodeEraser（ICSE 2026）同時報告兩維度。在其原設定（Coder-7B 本身含秘密）上單獨加邊界教師（dt-coder7b）：邊界 MA 0.19、EL₁₀ 0.08，對論文 8.49／3.68、重現 12.84–40.21；能力 MBPP／MBPP+ 77.2／63.2 對重現 76.2–77.5／62.2–63.8（持平）。HumanEval 題數太少，不納入判定</dd>
-        <dt>法律</dt><dd>無同時以 LexGLUE 與 ECHR 洩漏評估的模型；分解為能力 SOTA（LexGLUE 排行榜）＋邊界基線（Lukas、TAB）</dd>
-        <dt>醫學</dt><dd>SudoLM、sudoLLM、PermLLM 為聯合基線（授權式邊界）；尚未開始</dd>
-        <dt>缺</dt><dd>HumanEval 再追 1–4 分；CodeEraser 重現 set3 的 EvalPlus；Lukas 協定計分</dd>
-      </dl>
-    </article>
-    <article class="claim">
-      <div class="top"><div><span class="id">C5</span><h3>邊界教師達文獻水準</h3></div><span class="pill ok">已證明</span></div>
-      <span class="dim">邊界</span>
-      <dl>
-        <dt>法律</dt><dd>TAB：R .867、ER_di .997、P .895；Longformer .919／1.000／.836</dd>
-        <dt>程式碼</dt><dd>CredData 未見倉庫 F1 .817；detect-secrets .323、CredSweeper 規則 .625</dd>
-        <dt>程式碼（遺忘集）</dt><dd>secret-mask：程式化邊界教師，標註來自 CodeEraser 秘密遮罩</dd>
-      </dl>
-    </article>
-    <article class="claim">
-      <div class="top"><div><span class="id">C6</span><h3>結果穩健</h3></div><span class="pill todo">未開始</span></div>
-      <span class="dim">能力＋邊界</span>
-      <dl>
-        <dt>判準</dt><dd>關鍵比較至少 3 個 seed，附信賴區間；兩個領域、兩種規模</dd>
-        <dt>現況</dt><dd>全部單一 seed</dd>
-      </dl>
-    </article>
+    <article class="claim"><h3>C1 · 既有秘密抑制與繼承預防</h3><p>程式碼已觀察到既有秘密重現下降。ECHR 有留出案件的洩漏下降證據。乾淨學生的繼承預防需逐題確認教師已記住、初始學生未記住，再比較 s0、b1、DT。</p><span class="pill run">繼承預防待驗</span></article>
+    <article class="claim"><h3>C2 · 邊界下的能力保留</h3><p>Coder-7B 的 MBPP 落在 CodeEraser 復現範圍內，同場 HumanEval 較低。法律主線也有任務能力代價。能力保留需依不同任務量測。</p><span class="pill run">部分支持</span></article>
+    <article class="claim"><h3>C3 · 能力接近教師</h3><p>一般版 Qwen2.5-7B 完成離線 KD 和 OPD。已測程式碼能力仍有落差，兩個 OPD 組的部分通用分數低於 KD 暖身。</p><span class="pill no">未達標</span></article>
+    <article class="claim"><h3>C4 · 與文獻基線同場比較</h3><p>程式碼已有同基座 CodeEraser 對照。法律依能力與隱私協定分開參照。醫學倫理須補齊同題、同裁判、同計分的比較。</p><span class="pill run">部分驗收</span></article>
+    <article class="claim"><h3>C5 · 邊界教師的辨識能力</h3><p>TAB 與 CredData 提供審查器的辨識能力證據。端到端學生評估仍需分別檢查能力、越界與誤拒。</p><span class="pill ok">指定評估集已驗收</span></article>
+    <article class="claim"><h3>C6 · 跨種子與規模穩健性</h3><p>本頁主要對照採 seed 42。關鍵比較仍需多種子、信賴區間與跨規模驗證。</p><span class="pill todo">待排程</span></article>
   </div>
 </section>
 
-<section>
-  <h2>程式碼領域 <small>CodeEraser benchmark：Qwen2.5-Coder 秘密遺忘集 5 組 × 32</small></h2>
-  <div class="scroll"><table>
-    <thead><tr><th>模型</th><th>遺忘 MA</th><th>EL₃</th><th>EL₁₀</th><th>HumanEval</th><th>狀態</th><th>說明</th></tr></thead>
+<section id="code">
+  <h2>程式碼</h2>
+  <div class="scroll" role="region" tabindex="0" aria-label="秘密重現與程式碼能力比較"><table>
+    <thead><tr><th scope="col">模型與來源</th><th scope="col">遺忘 MA ↓</th><th scope="col">EL₁₀ ↓</th><th scope="col">HumanEval pass@1 ↑</th></tr></thead>
     <tbody>
-      <tr><td>教師 Qwen2.5-Coder-32B</td><td class="num">98.40</td><td class="num">95.49</td><td class="num">90.12</td><td class="num">61.27</td><td><span class="pill ok">完成</span></td><td>bigcode 協定下低於官方 65.9；EvalPlus 65.9，與官方一致</td></tr>
-      <tr><td>s0 Qwen2.5-7B</td><td class="num">95.18</td><td class="num">88.73</td><td class="num">79.55</td><td class="num">11.52</td><td><span class="pill ok">完成</span></td><td>低分來自 <code>prompt.strip()</code>；不刪提示詞尾貪婪 56.1，EvalPlus 57.3</td></tr>
-      <tr><td>b1（只有能力教師）</td><td class="num">93.68</td><td class="num">85.28</td><td class="num">78.23</td><td class="num">47.96</td><td><span class="pill ok">完成</span></td><td>不刪提示詞尾貪婪 46.3，低於 s0 56.1</td></tr>
-      <tr class="hl"><td><b>dt（雙教師，secret-mask）</b></td><td class="num">1.02</td><td class="num">3.81</td><td class="num">0.05</td><td class="num">46.80</td><td><span class="pill ok">完成</span></td><td>不刪提示詞尾貪婪 43.3；遮罩列已改為只用前向 KL</td></tr>
-      <tr class="hl"><td><b>dt-coder7b（Coder-7B 學生＋凍結 Coder-7B＋secret-mask）</b></td><td class="num">0.19</td><td class="num">2.35</td><td class="num">0.08</td><td class="num">55.34</td><td><span class="pill ok">完成</span></td><td>CodeEraser 原設定；作業 31722，604 步</td></tr>
-      <tr><td>b1-fn30k（函式級 30k 提示、256 token）</td><td class="num">92.20</td><td class="num">79.91</td><td class="num">71.03</td><td class="num">43.72</td><td><span class="pill ok">完成</span></td><td>作業 31704，1564 步；能力比 b1 低 4.2</td></tr>
-      <tr><td>dt-fn30k</td><td class="num">1.19</td><td class="num">3.17</td><td class="num">0.11</td><td class="num">45.65</td><td><span class="pill ok">完成</span></td><td>作業 31900；比 b1-fn30k 高 1.9，邊界仍成立；增加提示數量沒有提升能力</td></tr>
-      <tr><td>CodeEraser 論文</td><td class="num">8.49</td><td class="num">4.93</td><td class="num">3.68</td><td class="num">61.65</td><td><span class="pill ok">文獻</span></td><td>Coder-7B 本身遺忘；ICSE 2026，引用 10</td></tr>
-      <tr><td>CodeEraser 重現 set 0／1／2／3</td><td class="num">38.62／40.21／30.56／12.84</td><td class="num">14.10／15.85／18.98／9.50</td><td class="num">10.12／6.98／13.57／7.10</td><td class="num">60.85／59.70／60.13／61.44／59.65</td><td><span class="pill ok">5 組完成</span></td><td>能力重現成功；遺忘數字重現不出論文（論文 MA 8.49）</td></tr>
-      <tr><td colspan="7" class="note">評估資料：照 CodeEraser 官方程式（commit 0bd7ca9）從 codeparrot-clean-train 重建的 5 組遺忘集與保留集，指標移植自其 <code>model.py</code>，HumanEval 照其 bigcode 協定；實例與論文不同（重建的 Coder-7B 原模型 MA 97.48、EL₁₀ 85.53，論文 96.26、75.15），所以與論文數字的比較只能參考，同組比較以「CodeEraser 重現」為準。Coder-32B → Qwen2.5-7B 的 dt 只在邊界上優於 CodeEraser；在 CodeEraser 的原設定（Coder-7B）上，dt-coder7b 邊界優於 CodeEraser，EvalPlus 能力與其相當。dt 的邊界教師直接使用這 5 組的秘密 token，CodeEraser 也以同一遺忘集為訓練目標；未列入清單的秘密是否也不重現，尚未測。</td></tr>
-      <tr><td>第一版 dt（Coder-7B 自我蒸餾）</td><td class="num">78.23</td><td class="num">41.53</td><td class="num">23.70</td><td class="num">56.99</td><td><span class="pill void">作廢</span></td><td>學生本身含秘密，違反前提</td></tr>
+      <tr><th scope="row"><a href="https://arxiv.org/abs/2509.13755">CodeEraser 原文</a></th><td>8.49%</td><td>3.68%</td><td>61.65%</td></tr>
+      <tr><th scope="row">CodeEraser 五組復現，γ=0.5</th><td>34.17%</td><td>5.97%</td><td>60.49%</td></tr>
+      <tr><th scope="row">Qwen2.5-Coder-7B 原模型，專案重測</th><td>97.48%</td><td>85.53%</td><td>61.05%</td></tr>
+      <tr class="hl"><th scope="row">Qwen2.5-Coder-7B 原版 DT，604 步</th><td>0.19%</td><td>0.08%</td><td>55.34%</td></tr>
+      <tr><th scope="row">一般版 Qwen2.5-7B，KD → b1，604 步 OPD</th><td>93.19%</td><td>75.88%</td><td>45.24%</td></tr>
+      <tr class="hl"><th scope="row">一般版 Qwen2.5-7B，KD → DT，604 步 OPD</th><td>0.181%</td><td>0.00%</td><td>45.02%</td></tr>
     </tbody>
   </table></div>
-</section>
-
-<section>
-  <h2>程式碼能力：EvalPlus <small>貪婪解碼、base prompt；與 Qwen2.5-Coder 官方數字對照以驗證評估框架</small></h2>
-  <div class="scroll"><table>
-    <thead><tr><th>模型</th><th class="weak">HumanEval<span class="tag">164 題</span></th><th class="weak">HumanEval+<span class="tag">164 題</span></th><th>MBPP</th><th>MBPP+</th><th>說明</th></tr></thead>
+  <p class="note">MA 與 EL₁₀ 為五組等權平均。HumanEval 有 164 題、每題 50 次取樣。原文與專案重測的遺忘集實例有差異。專案兩路學生起始時均已有大量秘密記憶。原版 Coder-7B 使用凍結的同基座能力教師與程式化 secret-mask 邊界。</p>
+  <div class="scroll" role="region" tabindex="0" aria-label="貪婪解碼的程式碼能力比較"><table>
+    <thead><tr><th scope="col">模型與來源</th><th scope="col">HumanEval／HumanEval+</th><th scope="col">MBPP／MBPP+</th><th scope="col">CRUXEval-I／O</th></tr></thead>
     <tbody>
-      <tr><td>Qwen2.5-Coder-32B（能力教師）</td><td class="num weak">65.9</td><td class="num weak">59.8</td><td class="num">85.2</td><td class="num">70.4</td><td>官方 65.9／60.4、83.0／68.2</td></tr>
-      <tr><td>Qwen2.5-Coder-7B（CodeEraser 原模型）</td><td class="num weak">62.2</td><td class="num weak">53.7</td><td class="num">77.5</td><td class="num">63.8</td><td>官方 61.6／53.0、76.9／62.9</td></tr>
-      <tr><td>s0 Qwen2.5-7B</td><td class="num weak">57.3</td><td class="num weak">50.0</td><td class="num">77.2</td><td class="num">63.8</td><td>學生基座</td></tr>
-      <tr><td>CodeEraser 重現 set0</td><td class="num weak">59.1</td><td class="num weak">51.2</td><td class="num">76.2</td><td class="num">62.7</td><td rowspan="4">遺忘後都不高於原模型</td></tr>
-      <tr><td>CodeEraser 重現 set1</td><td class="num weak">60.4</td><td class="num weak">53.7</td><td class="num">76.7</td><td class="num">62.2</td></tr>
-      <tr><td>CodeEraser 重現 set2</td><td class="num weak">58.5</td><td class="num weak">51.8</td><td class="num">76.2</td><td class="num">63.2</td></tr>
-      <tr><td>CodeEraser 重現 set4</td><td class="num weak">61.6</td><td class="num weak">53.0</td><td class="num">77.5</td><td class="num">63.8</td></tr>
-      <tr class="hl"><td><b>dt-coder7b</b></td><td class="num weak">57.9</td><td class="num weak">50.6</td><td class="num">77.2</td><td class="num">63.2</td><td>MBPP 與 CodeEraser 持平；HumanEval 低於最差一組 0.6</td></tr>
-      <tr><td>b1、dt（32B → 7B）</td><td class="num weak">—</td><td class="num weak">—</td><td class="num">—</td><td class="num">—</td><td>模型在節點1，待生成</td></tr>
-      <tr><td colspan="6" class="note">兩個官方模型與官方數字相差 ≤2.2，評估框架可信；32B 高於 7B，先前 bigcode 協定下「32B 不如 7B」的反常在 EvalPlus 上不出現。<b>HumanEval／HumanEval+ 不適合用來判定本案的對比：</b>HumanEval+ 比 HumanEval 多 80 倍測試，判分更可靠，但題目仍是同一批 164 題，1 題 = 0.6 分，pass@1 在 60% 附近的標準誤約 3.8 分；dt 與 CodeEraser 的差距（0.6–3.7）小於它能分辨的範圍。結論改以 MBPP／MBPP+（378 題）為準，HumanEval 只列出供對照。</td></tr>
+      <tr><th scope="row">CodeEraser 復現，各評估批次範圍</th><td>58.5–61.6／51.2–53.7%</td><td>76.2–78.6／62.2–64.6%</td><td>54.75–57.25／56.12–57.12%</td></tr>
+      <tr><th scope="row">Qwen2.5-Coder-7B 原模型，專案重測</th><td>62.2／53.7%</td><td>77.5／63.8%</td><td>—</td></tr>
+      <tr class="hl"><th scope="row">Qwen2.5-Coder-7B 原版 DT</th><td>57.9／50.6%</td><td>77.2／63.2%</td><td>—</td></tr>
+      <tr><th scope="row">一般版 Qwen2.5-7B，KD 暖身</th><td>—</td><td>74.3／60.3%</td><td>53.38／46.62%</td></tr>
+      <tr><th scope="row">一般版 Qwen2.5-7B，KD → b1</th><td>—</td><td>70.1／57.9%</td><td>49.62／42.12%</td></tr>
+      <tr class="hl"><th scope="row">一般版 Qwen2.5-7B，KD → DT</th><td>—</td><td>69.0／56.6%</td><td>45.75／42.25%</td></tr>
     </tbody>
   </table></div>
-</section>
-
-<section>
-  <h2>程式碼能力：CRUXEval <small>800 題，輸入／輸出預測 CoT，貪婪解碼；官方 prompts 與判分（作業 32329 生成、32357 判分，節點1）</small></h2>
-  <div class="scroll"><table>
-    <thead><tr><th>模型</th><th>CRUXEval-I（CoT）↑</th><th>CRUXEval-O（CoT）↑</th><th>說明</th></tr></thead>
-    <tbody>
-      <tr><td>Qwen2.5-Coder-32B（能力教師）</td><td class="num">61.75</td><td class="num">70.00</td><td>官方 62.5／69.4</td></tr>
-      <tr><td>Qwen2.5-Coder-7B（CodeEraser 原模型）</td><td class="num">58.25</td><td class="num">57.62</td><td>官方 56.5／56.0</td></tr>
-      <tr><td>CodeEraser 復現 set0</td><td class="num">54.75</td><td class="num">56.62</td><td rowspan="5"></td></tr>
-      <tr><td>CodeEraser 復現 set1</td><td class="num">55.62</td><td class="num">56.00</td></tr>
-      <tr><td>CodeEraser 復現 set2</td><td class="num">55.25</td><td class="num">56.12</td></tr>
-      <tr><td>CodeEraser 復現 set3</td><td class="num">51.12</td><td class="num">56.12</td></tr>
-      <tr><td>CodeEraser 復現 set4</td><td class="num">56.75</td><td class="num">57.00</td></tr>
-      <tr><td>s0 Qwen2.5-7B</td><td class="num">51.50</td><td class="num">48.25</td><td>學生基座</td></tr>
-      <tr><td>b1（32B → 7B，OPD）</td><td class="num">52.12</td><td class="num">46.12</td><td>KD 前的版本</td></tr>
-      <tr><td>dt（32B → 7B，OPD）</td><td class="num">50.00</td><td class="num">47.00</td><td>KD 前的版本</td></tr>
-      <tr><td>dt-coder7b</td><td class="num">—</td><td class="num">—</td><td>模型在節點0，派送器等卡</td></tr>
-      <tr><td colspan="4" class="note">兩個官方模型與官方數字相差 ≤1.75，評估框架可信。每題 0.125 分。</td></tr>
-    </tbody>
-  </table></div>
-</section>
-
-<section>
-  <h2>dt 對 CodeEraser：同一模型、同一 benchmark <small>Coder-7B 本身含秘密（CodeEraser 原設定）；CodeEraser 為本案復現，「原文」另行標示</small></h2>
-  <div class="scroll"><table>
-    <thead><tr><th>模型</th><th>維度</th><th>遺忘 MA ↓</th><th>EL₃ ↓</th><th>EL₁₀ ↓</th><th>MBPP ↑</th><th>MBPP+ ↑</th><th class="weak">HumanEval<span class="tag">164 題</span></th><th class="weak">HumanEval+<span class="tag">164 題</span></th></tr></thead>
-    <tbody>
-      <tr><td>Coder-7B 原模型</td><td>參照</td><td class="num">97.48</td><td class="num">92.29</td><td class="num">85.53</td><td class="num">77.5</td><td class="num">63.8</td><td class="num weak">62.2</td><td class="num weak">53.7</td></tr>
-      <tr><td>CodeEraser 原文</td><td>文獻</td><td class="num">8.49</td><td class="num">4.93</td><td class="num">3.68</td><td class="num">—</td><td class="num">—</td><td class="num weak">61.65*</td><td class="num weak">—</td></tr>
-      <tr><td>CodeEraser 復現 set0</td><td rowspan="5">基線</td><td class="num">38.62</td><td class="num">14.10</td><td class="num">10.12</td><td class="num">76.2</td><td class="num">62.7</td><td class="num weak">59.1</td><td class="num weak">51.2</td></tr>
-      <tr><td>CodeEraser 復現 set1</td><td class="num">40.21</td><td class="num">15.85</td><td class="num">6.98</td><td class="num">76.7</td><td class="num">62.2</td><td class="num weak">60.4</td><td class="num weak">53.7</td></tr>
-      <tr><td>CodeEraser 復現 set2</td><td class="num">30.56</td><td class="num">18.98</td><td class="num">13.57</td><td class="num">76.2</td><td class="num">63.2</td><td class="num weak">58.5</td><td class="num weak">51.8</td></tr>
-      <tr><td>CodeEraser 復現 set3</td><td class="num">12.84</td><td class="num">9.50</td><td class="num">7.10</td><td class="num">—</td><td class="num">—</td><td class="num weak">—</td><td class="num weak">—</td></tr>
-      <tr><td>CodeEraser 復現 set4</td><td class="num">42.51</td><td class="num">16.51</td><td class="num">7.43</td><td class="num">77.5</td><td class="num">63.8</td><td class="num weak">61.6</td><td class="num weak">53.0</td></tr>
-      <tr class="hl"><td><b>dt-coder7b</b>（5 組一起）</td><td>本案</td><td class="num">0.19</td><td class="num">2.35</td><td class="num">0.08</td><td class="num">77.2</td><td class="num">63.2</td><td class="num weak">57.9</td><td class="num weak">50.6</td></tr>
-      <tr><td colspan="9" class="note">
-        <b>指標方向：</b>遺忘 MA／EL₃／EL₁₀ 量模型逐字重現秘密的程度，屬邊界維度，<b>越低越好</b>；MBPP／MBPP+ 為 pass@1，屬能力維度，越高越好。保留集結果見附錄 A。<br>
-        <b>結論（能力以 MBPP／MBPP+ 判定）：</b>
-        邊界上 dt 的遺忘集 MA／EL₁₀ 每一組都低於 CodeEraser 復現與原文，MA 低 12–42 點（復現 5 組平均 MA 32.95、EL₁₀ 9.04）。能力上 MBPP／MBPP+ 77.2／63.2，落在 CodeEraser 復現的 76.2–77.5／62.2–63.8 之內。<br>
-        <b>HumanEval 與 HumanEval+（灰底）只作對照：</b>HumanEval+ 用 80 倍測試修正了原版測試不足造成的誤判，判分更嚴格可靠；但兩者都是同一批 164 題，1 題 = 0.6 分，標準誤約 3.8 分，分不出 dt 與 CodeEraser 0.6–3.7 分的差距。題數的限制兩者相同，所以都不用來判定。*原文 61.65 為 bigcode 協定（T=0.2、n=50），不是 EvalPlus 貪婪分數。<br>
-        條件：單一 seed；遺忘集依官方程式重建，實例與原文不同；dt 一次訓練 5 組，CodeEraser 每組分開遺忘；set3 的 EvalPlus 在節點1 等卡。
-      </td></tr>
-    </tbody>
-  </table></div>
-</section>
-
-<section>
-  <h2>法律領域 <small>ECHR 判決：能力看 LexGLUE ecthr_a，邊界看識別片段重現</small></h2>
-  <div class="scroll"><table>
-    <thead><tr><th>模型</th><th>LexGLUE μ／m</th><th>留出重現率</th><th>OPD 案件重現率</th><th>狀態</th><th>說明</th></tr></thead>
-    <tbody>
-      <tr><td>教師 c-full-mem（Qwen3-8B）</td><td class="num">71.0／66.1</td><td class="num">39.5%</td><td class="num">46.4%</td><td><span class="pill ok">完成</span></td><td>秘密經兩階段 SFT 寫入</td></tr>
-      <tr><td>s0 Qwen3-1.7B</td><td class="num">17.7／15.8</td><td class="num">0.56%</td><td class="num">0.41%</td><td><span class="pill ok">完成</span></td><td></td></tr>
-      <tr><td>b1 1.7B</td><td class="num">56.6／42.0</td><td class="num">1.59%</td><td class="num">1.25%</td><td><span class="pill ok">完成</span></td><td>IFEval .669 → .368</td></tr>
-      <tr class="hl"><td><b>dt 1.7B</b></td><td class="num">49.1／35.2</td><td class="num">0.018%</td><td class="num">0.028%</td><td><span class="pill ok">完成</span></td><td>邊界成立；能力低於 b1 7.5 點</td></tr>
-      <tr><td>dt2 1.7B（下限＋PID λ）</td><td class="num">52.7／30.4</td><td class="num">0.075%</td><td class="num">0.011%</td><td><span class="pill ok">完成</span></td><td></td></tr>
-      <tr><td>Qwen3.8-27B 零樣本</td><td class="num">77.5／73.7</td><td class="num">—</td><td class="num">—</td><td><span class="pill ok">完成</span></td><td>高於 2022 排行榜</td></tr>
-      <tr><td>教師 c-full-mem-27b</td><td class="num">74.4／67.8</td><td class="num">58.1%</td><td class="num">—</td><td><span class="pill ok">完成</span></td><td>秘密寫入成功；能力比零樣本低 3.1</td></tr>
-      <tr><td>s0 Qwen3.5-9B</td><td class="num">59.2／50.1</td><td class="num">0.25%</td><td class="num">0.42%</td><td><span class="pill ok">完成</span></td><td></td></tr>
-      <tr><td>b1 9B</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td><span class="pill run">重新派送中</span></td><td>31623 失敗：27B 教師的 46 GB 分片未複製完整。已刪除殘檔，改以 sha256 校驗重新複製到節點1／2，完成後自動派送</td></tr>
-      <tr><td>dt 9B</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td><span class="pill run">重新派送中</span></td><td>31686 同一原因失敗；複製完成後自動派送（3 卡，含審查者）</td></tr>
-      <tr><td>LexGLUE 排行榜（2022）</td><td class="num">BERT 71.2／Longformer 64.7 m</td><td class="num">—</td><td class="num">—</td><td><span class="pill ok">文獻</span></td><td>能力基線，非現時 SOTA</td></tr>
-      <tr><td>Lukas 等 PII 抽取協定</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td><span class="pill no">阻塞</span></td><td>取樣完成，Flair 計分安裝逾時</td></tr>
-    </tbody>
-  </table></div>
-</section>
-
-<section>
-  <h2>醫學領域 <small>規劃為分布外測試，前期不使用（程式碼雙教師設計，2026-11-18）</small></h2>
-  <div class="scroll"><table>
-    <thead><tr><th>基線（文獻）</th><th>原文 benchmark 與指標</th><th>維度</th><th>邊界的類型</th><th>狀態</th></tr></thead>
-    <tbody>
-      <tr><td><a href="https://arxiv.org/abs/2410.14676">SudoLM</a>（ACL 2025）</td><td>TOFU、ChatDoctor；醫療答案由 GPT-4 對照標準答案評分，另看 MMLU</td><td>能力＋邊界（聯合）</td><td>帶授權金鑰時開放受限的參數知識，不帶時只答公開知識</td><td><span class="pill todo">未開始</span></td></tr>
-      <tr><td><a href="https://arxiv.org/abs/2505.14607">sudoLLM</a>（2025）</td><td>ChatDoctor-iCliniq（約 7,300 筆，抽 2,000 訓練、500 評估）、MedQA、MMLU 醫學子集；法律端為 Law Stack Exchange、LegalBench</td><td>能力＋邊界（聯合）</td><td>受限的是整個技能領域，依角色授權</td><td><span class="pill todo">未開始</span></td></tr>
-      <tr><td><a href="https://arxiv.org/abs/2505.22860">PermLLM</a>（NeurIPS 2025）</td><td>PubMedQA（另含 GPQA、RCV1、SimpleQA、WMDP）；DDI（成員推斷）、UGI（有無權限的效用差）</td><td>能力＋邊界（聯合）</td><td>依使用者權限開放資料域，每域一個 LoRA adapter</td><td><span class="pill todo">未開始</span></td></tr>
-    </tbody>
-  </table></div>
-  <div class="scroll"><table>
-    <thead><tr><th>候選資料</th><th>內容</th><th>能力評估</th><th>秘密／邊界標註</th><th>可用性</th></tr></thead>
-    <tbody>
-      <tr><td>ChatDoctor-iCliniq 等醫療對話</td><td>病人提問 → 醫師回答</td><td class="num">MedQA 10,178／1,273；PubMedQA 1,000</td><td>可識別資訊未核實，無原生標註</td><td><span class="pill ok">可取得</span></td></tr>
-      <tr><td>MIMIC、n2c2 去識別化語料</td><td>臨床紀錄</td><td>臨床任務</td><td>原生 PHI 標註</td><td><span class="pill no">需資料使用協議</span></td></tr>
-    </tbody>
-  </table></div>
-  <p class="note">這三個基線都同時報告「有授權時的能力」與「無授權時的拒答或洩漏」，屬聯合基線，但它們的邊界是授權控制的知識或技能，本案的邊界是教師參數中的秘密。要在醫學領域比較，需要先定義秘密來源（例如以 ChatDoctor 對話中可識別資訊訓練能力教師），再於其原文 benchmark 上評估能力。</p>
-</section>
-
-<section>
-  <h2>證明架構有用的最低標準 <small>不要求兩個維度都超過 SOTA；能力判定不用 HumanEval（164 題）</small></h2>
-  <div class="levels">
-    <div class="lv"><b>程式碼：已達 L2</b><span>M1、M2 達成；M4 在 CodeEraser 原設定上先達成；M3 待 KD 後的 32B→7B 學生</span></div>
-    <div class="lv"><b>法律：已達 L1</b><span>M1 達成；M3 在 1.7B 達成；M2 未達成（能力 −7.5）；9B 重新派送中</span></div>
-    <div class="lv lvkey"><b>層級</b><span>L1＝M1 ｜ L2＝M1＋M2 ｜ L3＝＋M3 ｜ L4＝＋M4 ｜ L5＝＋M5、M6、M7</span></div>
-  </div>
-  <div class="scroll"><table class="bar">
-    <colgroup><col style="width:13%"><col style="width:17%"><col style="width:30%"><col style="width:20%"><col style="width:20%"></colgroup>
-    <thead><tr><th>標準（層級）</th><th>比較對象</th><th>判準</th><th>程式碼</th><th>法律</th></tr></thead>
-    <tbody>
-      <tr><td><b>M1</b> 邊界有效<br><small>L1</small></td><td>dt 對 b1（同教師、同資料、同步數）</td><td>洩漏顯著低於 b1，且不高於未訓練學生</td>
-        <td><span class="pill ok">達成</span><div class="ev">遺忘 MA 93.68 → 1.02</div></td><td><span class="pill ok">達成</span><div class="ev">留出重現 1.59% → 0.018%</div></td></tr>
-      <tr><td><b>M2</b> 邊界不損能力<br><small>L2</small></td><td>有邊界教師對無邊界教師</td><td>能力差在非劣性範圍內（例如 2 點，或 seed 間波動以內）</td>
-        <td><span class="pill ok">達成</span><div class="ev">Coder-7B 設定：MBPP／MBPP+ 77.2／63.2 對原模型 77.5／63.8。32B→7B 的 b1／dt 待 MBPP、BigCodeBench</div></td><td><span class="pill no">未達成</span><div class="ev">LexGLUE b1 56.6、dt 49.1（−7.5）</div></td></tr>
-      <tr><td><b>M3</b> 蒸餾傳遞能力<br><small>L3</small></td><td>b1、dt 對學生基座 s0</td><td>能力顯著高於學生基座零樣本</td>
-        <td><span class="pill run">進行中</span><div class="ev">KD 教師分布 11／52 片，之後 KD＋OPD</div></td><td><span class="pill ok">1.7B 達成</span><div class="ev">17.7 → 49–57；9B 重新派送中</div></td></tr>
-      <tr><td><b>M4</b> 優於替代做法<br><small>L4</small></td><td>同設定下的 SOTA 或替代方法（CodeEraser、輸出過濾、資料清洗）</td><td>能力相當時洩漏較低，或洩漏相當時能力較高</td>
-        <td><span class="pill ok">Coder-7B 設定達成</span><div class="ev">遺忘 MA 0.19 對 CodeEraser 復現 12.8–40.2；MBPP 77.2 對 76.2–77.5</div></td><td><span class="pill run">部分</span><div class="ev">輸出過濾 0.29% 對 dt 0.018%；清洗未跑</div></td></tr>
-      <tr><td><b>M5</b> 穩健<br><small>L5</small></td><td>M1、M2、M4 的關鍵比較</td><td>3 個 seed，信賴區間分得開或落在非劣性範圍</td>
-        <td><span class="pill todo">未開始</span></td><td><span class="pill todo">未開始</span></td></tr>
-      <tr><td><b>M6</b> 跨領域<br><small>L5</small></td><td>—</td><td>至少兩個領域同時滿足 M1–M5</td>
-        <td colspan="2"><span class="pill run">進行中</span><div class="ev">兩個領域都有單一 seed 結果；法律未過 M2</div></td></tr>
-      <tr><td><b>M7</b> 通用能力不退化<br><small>L5</small></td><td>dt 對 b1 對學生基座</td><td>MMLU、GSM8K、BBH、TriviaQA、TruthfulQA、ARC（指令模型加 IFEval）上 dt 與 b1 非劣性，且不顯著低於學生基座</td>
-        <td><span class="pill run">已排入</span><div class="ev">節點1 派送器等卡</div></td><td><span class="pill run">部分</span><div class="ev">1.7B：GSM8K b1 −5.7、dt −1.5；IFEval b1 −30.1、dt −21.6</div></td></tr>
-    </tbody>
-  </table></div>
-  <p class="note">能力的判定 benchmark：程式碼用 MBPP／MBPP+、BigCodeBench、CRUXEval，法律用 LexGLUE。邊界上 dt 的洩漏應達到公認邊界方法的水準；能力上比較邊界帶來的能力代價（dt 減 b1）與基線方法自身的代價。</p>
-</section>
-
-<section>
-  <h2>證明有效所需的結果</h2>
+  <p class="note"><a href="https://github.com/evalplus/evalplus">EvalPlus</a> 採貪婪解碼，HumanEval 164 題、MBPP 378 題。<a href="https://github.com/facebookresearch/cruxeval">CRUXEval</a> 採 800 題、思維鏈提示與貪婪解碼。破折號表示本表無可核對結果。</p>
   <div class="cols">
-    <div class="box">
-      <h3>程式碼</h3>
-      <ul>
-        <li><b>邊界：</b>dt 的 MA／EL 低於 CodeEraser（已達成，單一 seed）</li>
-        <li><b>能力：</b>MBPP／MBPP+、BigCodeBench、CRUXEval 上不低於 CodeEraser（MBPP 已持平）；HumanEval 只作對照</li>
-        <li><b>基線：</b>CodeEraser 重現湊滿 5 組（set3 的 EvalPlus 未出），同協定對照</li>
-        <li><b>穩健：</b>b1、dt 各 3 個 seed</li>
-      </ul>
-    </div>
-    <div class="box">
-      <h3>法律</h3>
-      <ul>
-        <li><b>邊界：</b>9B dt 的重現率接近 s0 0.25%，遠低於 9B b1</li>
-        <li><b>能力：</b>9B dt 的 LexGLUE 與 b1 相當，且高於 9B 零樣本 59.2，目標接近排行榜 71.2</li>
-        <li><b>基線：</b>Lukas 協定的抽取率，對照其未防護、清洗、DP 數字</li>
-        <li><b>穩健：</b>3 個 seed</li>
-      </ul>
-    </div>
-    <div class="box">
-      <h3>醫學（分布外）</h3>
-      <ul>
-        <li><b>邊界：</b>dt 不重現能力教師訓練語料中的病人可識別資訊，對照 b1</li>
-        <li><b>能力：</b>MedQA、PubMedQA 準確率與 b1 相當，接近能力教師</li>
-        <li><b>基線：</b>SudoLM、sudoLLM、PermLLM 在其原文 benchmark 上的數字</li>
-      </ul>
-    </div>
+    <article class="box"><h3>Coder-7B 的 KD 後對照</h3><p><span class="pill run">暖身進行中</span> 已啟動暖身作業，尚待確認首筆訓練進度。b1／DT 待暖身產物驗收後排程。</p></article>
+    <article class="box"><h3>CodeEraser 前沿基座</h3><p><span class="pill run">重建與校準中</span> 以 Qwen3.5-9B-Base 重建記憶門檻，配合 Qwen3.8-27B 篩選「教師記住、學生未記住」的樣本。CredData 的 Qwen3.5-9B → 2B 遷移另行驗收。</p></article>
   </div>
 </section>
 
-<section>
-  <h2>接下來的工作 <small>2026-11-20，面板恢復後已核對</small></h2>
-  <div class="box">
-    <h3>運行中（已提交）</h3>
-    <ul>
-      <li>法律 9B b1（31623，節點1）、dt（31686，節點2）：完成後自動評估 LexGLUE、重現率與通用 benchmark</li>
-      <li>法律 9B b1／dt：27B 教師分片以 sha256 校驗重新複製到節點1／2，完成後自動派送（<code>scripts/cluster/legal_chain.sh</code>）</li>
-      <li>離線 KD 教師生成：52 片完成 11 片（每片約 8.1 萬段、1.7 GB）。節點0 現 2 卡，當前兩片完成後改為 GPU 4–7 全部空卡續跑；節點1（分片 40–53）、節點2（30–39）各 1 卡從高號往回做，結果複製回節點0（<code>kd_chain.py</code>、<code>kd_sync.py</code>）</li>
-      <li>通用 benchmark 派送器（節點1，等卡）</li>
-    </ul>
-    <h3>即將進行</h3>
-    <ol>
-      <li>KD 生成完成後：學生 top-20 KL 離線蒸餾，再接 b1／dt OPD，目標讓 7B 學生高於 s0 並接近 Coder-32B</li>
-      <li>b1、dt、b1-fn、CodeEraser set3 的 EvalPlus 生成與計分（節點1）</li>
-      <li>BigCodeBench、CRUXEval 結果出來後更新 dt-coder7b 與 CodeEraser 的能力對比</li>
-      <li>法律審查者改為只計真實秘密片段，消除 dt 的能力代價</li>
-      <li>Lukas 計分改用較輕的安裝方式；關鍵比較補 3 個 seed</li>
-    </ol>
-  </div>
-</section>
-<section>
-  <h2>附錄 A：保留集 <small>不列入正式結果；逐字記憶屬邊界，越低越好，較低不算劣勢</small></h2>
-  <div class="scroll"><table>
-    <thead><tr><th>模型</th><th>保留 MA ↓</th><th>保留 EL₃ ↓</th><th>保留 EL₅ ↓</th><th>保留 EL₁₀ ↓</th></tr></thead>
+<section id="law">
+  <h2>法律 ECHR <small>v0.2.0 已驗收</small></h2>
+  <div class="scroll" role="region" tabindex="0" aria-label="法律能力與洩漏比較"><table>
+    <thead><tr><th scope="col">模型與來源</th><th scope="col">ECtHR A micro／macro-F1 ↑</th><th scope="col">留出案件片段重現 ↓</th><th scope="col">直接姓名重現 ↓</th></tr></thead>
     <tbody>
-      <tr><td>Coder-7B 原模型</td><td class="num">92.67</td><td class="num">—</td><td class="num">—</td><td class="num">81.77</td></tr>
-      <tr><td>CodeEraser 復現 set0／1／2</td><td class="num">92.64／92.54／92.64</td><td class="num">89.65／89.52／89.78</td><td class="num">86.17／86.08／86.32</td><td class="num">82.07／81.80／82.24</td></tr>
-      <tr class="hl"><td><b>dt-coder7b</b></td><td class="num">92.05</td><td class="num">85.18</td><td class="num">80.42</td><td class="num">74.82</td></tr>
-      <tr><td>Coder-32B（教師）</td><td class="num">93.45</td><td class="num">—</td><td class="num">—</td><td class="num">85.02</td></tr>
-      <tr><td>s0 Qwen2.5-7B</td><td class="num">91.41</td><td class="num">—</td><td class="num">—</td><td class="num">76.58</td></tr>
-      <tr><td>b1／dt（32B → 7B）</td><td class="num">90.72／90.77</td><td class="num">—</td><td class="num">—</td><td class="num">76.69／71.65</td></tr>
-      <tr><td>b1-fn30k／dt-fn30k</td><td class="num">89.42／90.58</td><td class="num">80.56／84.05</td><td class="num">74.62／79.40</td><td class="num">68.94／74.86</td></tr>
-      <tr><td colspan="5" class="note">保留集：CodeEraser 準備的 32 段不含秘密、原模型記得的程式碼（各 128 token）。本案把一切原文記憶（含與不含秘密）視為邊界，指標越低越好；CodeEraser 原文把它當作效用指標。訓練方式不同：CodeEraser 每個 epoch 在這 32 段完整文字上做 teacher-forcing 的 KL 以貼近原模型；dt 只取每段前 64 token 當提示，續寫由學生自己取樣。</td></tr>
+      <tr><th scope="row"><a href="https://arxiv.org/abs/2110.00976">LexGLUE 論文參照</a></th><td>ECtHR A 原始基線</td><td>—</td><td>—</td></tr>
+      <tr><th scope="row"><a href="https://arxiv.org/abs/2302.00539">Lukas 等，隱私文獻</a></th><td>原文採困惑度</td><td colspan="2">原文採 GPT-2 無條件抽取協定，另行對照</td></tr>
+      <tr><th scope="row">Qwen3-1.7B s0，專案</th><td>17.651／15.823%</td><td>0.557%</td><td>0.000%</td></tr>
+      <tr><th scope="row">b1，專案</th><td>56.585／41.964%</td><td>1.595%</td><td>1.205%</td></tr>
+      <tr class="hl"><th scope="row">DT，專案</th><td>49.074／35.235%</td><td>0.018%</td><td>0.000%</td></tr>
+      <tr><th scope="row">Qwen3-8B 能力教師，專案</th><td>70.995／66.122%</td><td>39.545%</td><td>15.261%</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">任務 1,000 件、留出判決 249 件、直接詢問 498 題，另有七類通用能力評估。DT 的片段重現下降，任務 micro-F1 較 b1 低 7.51 個百分點。<a href="https://arxiv.org/abs/2202.00443">TAB</a> 官方測試另外驗證直接識別資訊辨識。法律 9B 擴展已有對照紀錄，和 v0.2.0 採不同模型配置。DT2 的通用能力仍待補齊。</p>
+</section>
+
+<section id="medicine">
+  <h2>醫學</h2>
+  <div class="cols">
+    <article class="box"><h3>MedSafetyBench · 醫療倫理</h3><p><span class="pill ok">訓練與產物已驗收</span> MedAlpaca-7B、Llama-2-70B-chat 能力教師及學習型邊界教師已完成本地對照。900 題有害請求的裁判分數出現下限效應。醫學選擇題需補完整候選計分與逐題輸出，並另測正當請求誤拒。</p><p><a href="https://arxiv.org/abs/2403.03744">MedSafetyBench 原文</a></p></article>
+    <article class="box"><h3>SafeMed-R1 · 方法對照</h3><p><span class="pill todo">待排程</span> 已核對原文結果。已核對作者公開的 Qwen3-32B 衍生權重，待按統一協定實測。縮小配置需獨立標示，原文分數與同場重測分開呈現。</p><p><a href="https://arxiv.org/abs/2605.28338">SafeMed-R1 原文</a> · <a href="https://huggingface.co/OpenMedZoo/SafeMed-R1/tree/af7507858d7e9c99631e996b26779ec6f7684c02">作者權重</a></p></article>
+    <article class="box"><h3>SudoLM · 固定金鑰存取控制</h3><p><span class="pill ok">復現與重算已驗收</span> 2,642 筆醫療有／無金鑰測試支持醫療子集的存取控制。加入 400 題無金鑰公開問題後，復現模型全數誤拒。尚缺公開題的有金鑰組與原文詳答級別判讀。</p><p><a href="https://arxiv.org/abs/2410.14676">SudoLM 原文</a> · <a href="https://arxiv.org/abs/2505.14607">sudoLLM</a> · <a href="https://arxiv.org/abs/2505.22860">PermLLM</a></p></article>
+    <article class="box"><h3>Synthea · 合成病歷隱私</h3><p><span class="pill ok">資料準備已驗收</span> 已準備 1,145 位合成病人、70,548 條教師樣本，其中 39,870 條含構造秘密。預定與 MultiMedQA 結合，分測病歷隱私、授權與一般醫學能力。端到端結果待驗。</p><p><a href="https://synthetichealth.github.io/synthea/">Synthea</a> · <a href="https://arxiv.org/abs/2212.13138">MultiMedQA</a></p></article>
+  </div>
+  <div class="scroll" role="region" tabindex="0" aria-label="醫學倫理能力與邊界比較"><table>
+    <thead><tr><th scope="col">模型與來源</th><th scope="col">MedSafetyBench 有害程度 ↓</th><th scope="col">醫學能力 ↑</th><th scope="col">評估條件</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">MedSafetyBench 安全微調，專案復現</th><td>1.047</td><td>PubMedQA 33.20%</td><td rowspan="4">專案歷史評估。能力欄採待驗收的 top-20 選項計分，裁判對 b1 與 DT 均達評分下限。</td></tr>
+      <tr><th scope="row">MedAlpaca-7B 基座，專案</th><td>2.053</td><td>PubMedQA 37.20%</td></tr>
+      <tr><th scope="row">b1，專案</th><td>1.000</td><td>PubMedQA 13.40%</td></tr>
+      <tr class="hl"><th scope="row">DT，專案</th><td>1.000</td><td>PubMedQA 27.20%</td></tr>
+      <tr><th scope="row">SafeMed-R1，原文表 1–2</th><td>1.10</td><td>原文八項綜合 79.64%</td><td>原文基座與評分協定獨立，僅作文獻參照。</td></tr>
     </tbody>
   </table></div>
 </section>
+
+<section id="pipeline">
+  <h2>醫學 DT 訓練與統一評估</h2>
+  <div class="cols">
+    <article class="box"><h3>既有 DT 路徑</h3><span class="pill ok">113 步訓練已完成</span><ol>
+      <li>學生從 1,800 道訓練提示取樣生成回答。邊界教師以 900 筆安全示範訓練。</li>
+      <li>邊界教師審查學生回答，並在需要時給修正版。</li>
+      <li>未修正回答保留能力教師的逐 token KL。修正樣本切除能力 KL，加入邊界分布差與修正版負對數概似。</li>
+      <li>依越界訊號調整邊界權重，保存學生檢查點。推論只載入學生。</li>
+    </ol></article>
+    <article class="box"><h3>MedBench v1 統一評估與 DT 接入</h3><span class="pill run">已有實作，正式結果待驗</span><ol>
+      <li>現有評估入口固定資料版本、題目、提示協定、解碼設定及裁判，供基座、安全微調、SafeMed-R1、b1、DT 共用。</li>
+      <li>分報有害程度、正當請求誤拒與醫學正確率。新計分遍歷完整候選，記錄逐題分數與解析失敗，並檢查裁判正反控制。回答品質另行驗收。</li>
+      <li>DT 訓練已接到共用入口。下一步使用正式模型與資料核對五組結果、各項分母及裁判控制，再發表同場比較。</li>
+    </ol></article>
+  </div>
+</section>
+</main>
 </div>
 </body>
 </html>
